@@ -18,6 +18,8 @@
         <character-card character="{{character}}"></character-card>
       </template>
     </template>
+  <paper-button raised on-tap="requestMoreCharacters">Cargar más personajes</paper-button>
+  <iron-request id="request"></iron-request>
 
   </template>
 
@@ -39,6 +41,27 @@
       },
       isBirthdayUnknown: function (character) {
         return character.birth_year!== 'unknown';
+      },
+      requestMoreCharacters: function () {
+        var that = this;
+        that.$.request
+          .send({
+            url: "http://swapi.co/api/people/".concat(this.randomPage())
+          })
+          .then(function (character) {
+            var stringObject = character.parseResponse()
+            that.push('characters', JSON.parse(stringObject))
+
+            // Esto funciona para notificar a Polymer del cambio
+            // en un path, no profundo, regularmente Strings:
+            // that.characters.push(JSON.parse(stringObject));
+            // that.notifyPath('characters', that.characters)
+            // console.log(that.characters);
+          })
+          .catch(function (err) {
+            console.log(err);
+          });
+
       }
     });
   </script>
