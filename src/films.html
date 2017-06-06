@@ -9,6 +9,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="./film-card.html">
 <link rel="import" href="shared-styles.html">
 
 <dom-module id="my-view1">
@@ -19,19 +21,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         padding: 10px;
       }
-    </style>
 
-    <div class="card">
-      <div class="circle">1</div>
-      <h1>View One</h1>
-      <p>Ut labores minimum atomorum pro. Laudem tibique ut has.</p>
-      <p>Lorem ipsum dolor sit amet, per in nusquam nominavi periculis, sit elit oportere ea.Lorem ipsum dolor sit amet, per in nusquam nominavi periculis, sit elit oportere ea.Cu mei vide viris gloriatur, at populo eripuit sit.</p>
-    </div>
+    </style>
+    <iron-ajax
+      auto
+      url="http://swapi.co/api/films"
+      handle-as="json"
+      on-response="handleResponse"
+      debounce-duration="300">
+    </iron-ajax>
+
+
+    <template is="dom-repeat" items="{{films}}" as="film">
+      <film-card film="{{film}}"><film-card>
+    </template>
   </template>
 
   <script>
     Polymer({
       is: 'my-view1',
+      handleResponse: function (response) {
+        this.films = response.detail.response.results;
+      }
     });
   </script>
 </dom-module>
