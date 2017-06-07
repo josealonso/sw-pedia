@@ -4,9 +4,10 @@
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/paper-card/paper-card.html">
 <link rel="import" href="shared-styles.html">
+<script src="https://cdn.rawgit.com/cfjedimaster/SWAPI-Wrapper/2c8a87c1/lib/swapi.js"></script>
 
 <dom-module id="film-card">
-  <template>
+    <template>
     <style include="shared-styles">
       :host {
         display: block;
@@ -60,19 +61,29 @@
             <paper-icon-button icon="icons:event"></paper-icon-button>
             <paper-button>{{film.producer}}</paper-button>
             <paper-button>Episodio {{film.episode_id}}</paper-button>
-            <paper-button class="cafe-reserve">Más información</paper-button>
+            <paper-button on-tap="showGullDetails" class="cafe-reserve">Más información</paper-button>
           </div>
         </div>
       </paper-card>
 
   </template>
 
-  <script>
-    Polymer({
-      is: 'film-card',
-      film: {
-        type: Object
-      }
-    });
-  </script>
+    <script>
+        Polymer({
+            is: 'film-card',
+            film: {
+                type: Object
+            },
+            showFullDetails: function(event) {
+                var that = this;
+
+                filmId = that.film.episode_id;
+
+                swapi = swapiModule;
+                swapi.getFilm(filmId, function(film) {
+                    that.currentFilm = film;
+                });
+            }
+        });
+    </script>
 </dom-module>

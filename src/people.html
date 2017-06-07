@@ -1,10 +1,11 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-spinner/paper-spinner.html">
 <link rel="import" href="./character-card.html">
 <link rel="import" href="shared-styles.html">
 <script src="https://cdn.rawgit.com/cfjedimaster/SWAPI-Wrapper/2c8a87c1/lib/swapi.js"></script>
 
 <dom-module id="my-view2">
-  <template>
+    <template>
     <style include="shared-styles">
       :host {
         display: block;
@@ -12,57 +13,100 @@
         padding: 10px;
       }
 
+      #mainspinner{
+          position: absolute;
+          left: calc(50% - 18px);
+          top: calc(50% - 18px);
+        }
+      #spinner{
+          margin-left: 15px;
+        }
     </style>
     <template is="dom-repeat" items="{{characters}}" as="character">
       <template is="dom-if" if="{{isBirthdayUnknown(character)}}">
         <character-card character="{{character}}"></character-card>
       </template>
     </template>
-  <paper-button raised on-tap="requestMoreCharacters">Cargar más personajes</paper-button>
-  <iron-request id="request"></iron-request>
 
-  </template>
+    <paper-spinner active id="mainspinner">...</paper-spinner>
 
-  <script>
-    Polymer({
-      is: 'my-view2',
-      attached: function () {
-        var swapi = swapiModule,
-          that = this;
+    <paper-button raised on-tap="requestMoreCharacters">
+        Cargar más personajes
+        <paper-spinner id="spinner">...</paper-spinner>
+    </paper-button>
+    <iron-request id="request"></iron-request>
 
-        swapiModule.getPeople(this.randomPage(), function(characters) {
-          that.characters = characters.results;
-          console.log(that.characters)
+    <paper-dialog id="scrolling">
+        <h2>Scrolling</h2>
+        <paper-dialog-scrollable>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
+                irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
+                irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
+                irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
+                irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
+                irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
+                irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
+                irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute
+                irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        </paper-dialog-scrollable>
+        <div class="buttons">
+            <paper-button dialog-dismiss>Cancel</paper-button>
+            <paper-button dialog-confirm autofocus>OK</paper-button>
+        </div>
+    </paper-dialog>
+
+    </template>
+
+    <script>
+        Polymer({
+            is: 'my-view2',
+            attached: function() {
+                var swapi = swapiModule,
+                    that = this;
+
+                swapiModule.getPeople(this.randomPage(), function(characters) {
+                    that.characters = characters.results;
+                    that.$.mainspinner.active = false;
+                    that.$.mainspinner.style.display = 'none';
+                    console.log(that.characters)
+                });
+
+            },
+            randomPage: function() {
+                return Math.floor(Math.random() * 8) + 1;
+            },
+            isBirthdayUnknown: function(character) {
+                return character.birth_year !== 'unknown';
+            },
+            requestMoreCharacters: function() {
+                var that = this;
+                that.$.spinner.active = true;
+                that.$.request
+                    .send({
+                        url: "http://swapi.co/api/people/".concat(this.randomPage())
+                    })
+                    .then(function(character) {
+                        var stringObject = character.parseResponse()
+                        that.push('characters', JSON.parse(stringObject))
+                        that.$.spinner.active = false;
+
+                        // Esto funciona para notificar a Polymer del cambio
+                        // en un path, no profundo, regularmente Strings:
+                        // that.characters.push(JSON.parse(stringObject));
+                        // that.notifyPath('characters', that.characters)
+                        // console.log(that.characters);
+                    })
+                    .catch(function(err) {
+                        console.log(err);
+                    });
+            }
         });
-
-      },
-      randomPage: function () {
-        return Math.floor(Math.random() * 8) + 1;
-      },
-      isBirthdayUnknown: function (character) {
-        return character.birth_year!== 'unknown';
-      },
-      requestMoreCharacters: function () {
-        var that = this;
-        that.$.request
-          .send({
-            url: "http://swapi.co/api/people/".concat(this.randomPage())
-          })
-          .then(function (character) {
-            var stringObject = character.parseResponse()
-            that.push('characters', JSON.parse(stringObject))
-
-            // Esto funciona para notificar a Polymer del cambio
-            // en un path, no profundo, regularmente Strings:
-            // that.characters.push(JSON.parse(stringObject));
-            // that.notifyPath('characters', that.characters)
-            // console.log(that.characters);
-          })
-          .catch(function (err) {
-            console.log(err);
-          });
-
-      }
-    });
-  </script>
+    </script>
 </dom-module>
