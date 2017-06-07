@@ -40,6 +40,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <paper-button id="find" on-tap="findCharacter" raised>buscar</paper-button>
     </div>
 
+    <template is="dom-if" if={{areThereResults}}>
+      <h1>Lo siento, ese personaje, no es de Star Wars</h1>
+      <h4>(O es de Rogue One)</h4>
+    </template>
+
     <template is="dom-repeat" items={{results}} as=result>
       <character-card character={{result}}></character-card>
     </template>
@@ -49,18 +54,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <script>
     Polymer({
       is: 'my-view3',
-      attached: function () {
-
+      properties: {
+        areThereResults: {
+          type: Boolean,
+          notify: true,
+          reflectToAttribute: true
+        }
       },
       findCharacter: function () {
         var who = this.root.querySelector('#character').value,
           request = this.root.querySelector('iron-ajax');
 
           request.url = 'https://swapi.co/api/people/'.concat('?search=', who)
-          console.log(request.url)
       },
       handleResponse: function (response) {
         this.results = response.detail.response.results;
+        if (this.results.length >= 1) {
+          this.areThereResults = false;
+        } else {
+          this.areThereResults = true;
+        }
       }
     });
   </script>
