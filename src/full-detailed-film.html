@@ -1,0 +1,95 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="shared-styles.html">
+<script src="https://cdn.rawgit.com/cfjedimaster/SWAPI-Wrapper/2c8a87c1/lib/swapi.js"></script>
+<script src="../bower_components\ramda\dist\ramda.js"></script>
+
+<dom-module id="full-detailed-film">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+        padding: 10px;
+      }
+    </style>
+
+    <paper-card elevation="0">
+      <div class="card-content">
+        <div class="cafe-header">{{film.title}}
+          <div class="cafe-location cafe-light">
+            <span>{{film.release_date}}</span>
+          </div>
+        </div>
+        <div class="cafe-rating">
+          <iron-icon class="star" icon="star"></iron-icon>
+          <iron-icon class="star" icon="star"></iron-icon>
+          <iron-icon class="star" icon="star"></iron-icon>
+          <iron-icon class="star" icon="star"></iron-icon>
+          <iron-icon class="star" icon="star"></iron-icon>
+        </div>
+        <p>{{film.director}}</p>
+        <p class="cafe-light">{{film.opening_crawl}}</p>
+      </div>
+      <div class="card-actions">
+        <div class="horizontal justified">
+          <paper-icon-button icon="icons:event"></paper-icon-button>
+          <paper-button>{{film.producer}}</paper-button>
+          <paper-button>Episodio {{film.episode_id}}</paper-button>
+        </div>
+      </div>
+      <div class="card-actions">
+        <h2>Personajes  de esta película</h2>
+        <div class="horizontal justified">
+          <template is="dom-repeat" items={{characters}} as=character>
+            <paper-button noink>{{character.name}}</paper-button>
+          </template>
+        </div>
+      </div>
+    </paper-card>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'full-detailed-film',
+      properties: {
+        film: {
+          type: Object
+        }
+      },
+      fetchExtraData: function () {
+        var that = this,
+        swapi    = swapiModule,
+        collections = R
+          .pick(['characters', 'planets', 'species', 'starships', 'vehicles'], that.film),
+        charactersPromises;
+
+        charactersPromises = R.map(
+          function (character) {
+            return new Promise(function (resolve, reject) {
+              swapi.getPerson(character.split('people/')[1].split('/')[0], function(character) {
+                if (!character) {
+                  reject(new Error());
+                  return;
+                }
+
+                resolve(character);
+              });
+            });
+          },
+          collections.characters
+        );
+        Promise
+          .all(charactersPromises)
+          .then(function (characters) {
+            that.characters = characters;
+            console.log(that.characters)
+          })
+          .catch(function (err) {
+            console.log(err)
+          });
+      }
+
+    });
+  </script>
+</dom-module>

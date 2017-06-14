@@ -3,6 +3,8 @@
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="./full-detailed-film.html">
 <link rel="import" href="shared-styles.html">
 <script src="https://cdn.rawgit.com/cfjedimaster/SWAPI-Wrapper/2c8a87c1/lib/swapi.js"></script>
 
@@ -11,32 +13,12 @@
     <style include="shared-styles">
       :host {
         display: block;
-
         padding: 10px;
       }
-
-      body {
-        display: flex;
-        align-items: center;
-        justify-content: center;
+      paper-dialog {
+        max-width: 1200px;
+        max-height: 650px;
       }
-      paper-card {
-    	max-width: 500px;
-      }
-      .cafe-header { @apply --paper-font-headline; }
-      .cafe-light { color: var(--paper-grey-600); }
-      .cafe-location {
-        float: right;
-        font-size: 15px;
-        vertical-align: middle;
-      }
-      .cafe-reserve { color: var(--google-blue-500); }
-          iron-icon.star {
-        --iron-icon-width: 16px;
-        --iron-icon-height: 16px;
-        color: var(--paper-amber-500);
-      }
-      iron-icon.star:last-of-type { color: var(--paper-grey-500); }
 
     </style>
       <paper-card>
@@ -61,29 +43,35 @@
             <paper-icon-button icon="icons:event"></paper-icon-button>
             <paper-button>{{film.producer}}</paper-button>
             <paper-button>Episodio {{film.episode_id}}</paper-button>
-            <paper-button on-tap="showGullDetails" class="cafe-reserve">Más información</paper-button>
+            <paper-button on-tap="showFullDetails" class="cafe-reserve">Más información</paper-button>
           </div>
         </div>
       </paper-card>
+      <paper-dialog id="current-film-dialog">
+        <paper-dialog-scrollable>
+          <full-detailed-film film={{film}}></full-detailed-film>
+        </paper-dialog-scrollable>
+        <div class="buttons">
+          <paper-button dialog-dismiss>Cancel</paper-button>
+          <paper-button dialog-confirm autofocus>OK</paper-button>
+        </div>
+      </paper-dialog>
 
   </template>
+  <script>
+    Polymer({
+      is: 'film-card',
+      film: {
+        type: Object
+      },
+      showFullDetails: function () {
+      var that = this,
+        currentFilmDialog = that.root.querySelector('#current-film-dialog'),
+        fullDetailedFilm = this.root.querySelector('full-detailed-film');
 
-    <script>
-        Polymer({
-            is: 'film-card',
-            film: {
-                type: Object
-            },
-            showFullDetails: function(event) {
-                var that = this;
-
-                filmId = that.film.episode_id;
-
-                swapi = swapiModule;
-                swapi.getFilm(filmId, function(film) {
-                    that.currentFilm = film;
-                });
-            }
-        });
-    </script>
+        currentFilmDialog.open();
+        fullDetailedFilm.fetchExtraData();
+      }
+    });
+  </script>
 </dom-module>
